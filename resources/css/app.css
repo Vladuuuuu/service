@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+    body {
+        @apply text-gray-800;
+    }
+    ::selection {
+        @apply bg-indigo-600/20 text-indigo-900;
+    }
+}
+
+@layer components {
+    /* Cards */
+    .card {
+        @apply bg-white rounded-2xl border border-gray-200/70 shadow-sm transition-all duration-300;
+    }
+    .card-hover {
+        @apply hover:shadow-lg hover:shadow-gray-200/60 hover:border-gray-300/60 hover:-translate-y-1;
+    }
+    .card-dark {
+        @apply bg-gray-900 rounded-2xl border border-gray-800 text-white;
+    }
+
+    /* Buttons */
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 font-semibold text-sm rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    }
+    .btn-primary {
+        @apply btn px-6 py-3 bg-gray-900 text-white hover:bg-gray-800 active:bg-black focus:ring-gray-900 shadow-sm;
+    }
+    .btn-accent {
+        @apply btn px-6 py-3 bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 focus:ring-indigo-500 shadow-sm shadow-indigo-600/25;
+    }
+    .btn-secondary {
+        @apply btn px-6 py-3 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300 focus:ring-gray-400;
+    }
+    .btn-success {
+        @apply btn px-6 py-3 bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 focus:ring-emerald-500 shadow-sm shadow-emerald-600/25;
+    }
+    .btn-sm {
+        @apply !px-4 !py-2 !text-xs;
+    }
+    .btn-lg {
+        @apply !px-8 !py-4 !text-base;
+    }
+
+    /* Badges */
+    .badge {
+        @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold;
+    }
+    .badge-pending {
+        @apply bg-gray-100 text-gray-600;
+    }
+    .badge-progress {
+        @apply bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20;
+    }
+    .badge-completed {
+        @apply bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20;
+    }
+    .badge-cancelled {
+        @apply bg-red-50 text-red-600 ring-1 ring-inset ring-red-600/20;
+    }
+
+    /* Typography */
+    .heading-xl {
+        @apply text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08];
+    }
+    .heading-lg {
+        @apply text-2xl sm:text-3xl font-bold tracking-tight;
+    }
+    .heading-md {
+        @apply text-lg font-semibold tracking-tight text-gray-900;
+    }
+    .section-label {
+        @apply text-xs font-semibold uppercase tracking-widest text-indigo-600;
+    }
+
+    /* Form inputs */
+    .input-modern {
+        @apply w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-colors duration-150;
+    }
+
+    /* Tables */
+    .table-modern {
+        @apply w-full text-sm;
+    }
+    .table-modern thead {
+        @apply bg-gray-50 border-b border-gray-200;
+    }
+    .table-modern th {
+        @apply px-5 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider;
+    }
+    .table-modern td {
+        @apply px-5 py-4;
+    }
+    .table-modern tbody tr {
+        @apply border-b border-gray-100 last:border-0 hover:bg-gray-50/60 transition-colors;
+    }
+
+    /* Utility */
+    .glass {
+        @apply bg-white/60 backdrop-blur-lg;
+    }
+    .section-padding {
+        @apply py-20 sm:py-28;
+    }
+}
