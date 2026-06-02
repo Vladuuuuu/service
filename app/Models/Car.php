@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Car extends Model
 {
     protected $fillable = [
-        'user_id', 'brand', 'model', 'year', 'plate', 'km_current',
+        'user_id', 'brand', 'model', 'year', 'plate', 'vin', 'km_current',
     ];
 
     protected $casts = [

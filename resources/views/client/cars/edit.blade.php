@@ -43,6 +43,13 @@
                         </div>
 
                         <div class="md:col-span-2">
+                            <label for="vin" class="block text-sm font-medium text-gray-700 mb-1.5">Serie caroserie (VIN) <span class="text-gray-400 font-normal">— opțional</span></label>
+                            <input id="vin" name="vin" type="text" value="{{ old('vin', $car->vin) }}" maxlength="17" placeholder="ex: WBA3A5G59DNP26082"
+                                   class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition uppercase" />
+                            @error('vin') <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="md:col-span-2">
                             <label for="km_current" class="block text-sm font-medium text-gray-700 mb-1.5">Kilometraj actual</label>
                             <input id="km_current" name="km_current" type="number" value="{{ old('km_current', $car->km_current) }}" required min="0"
                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition" />

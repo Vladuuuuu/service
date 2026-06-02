@@ -29,6 +29,7 @@ class ClientCarController extends Controller
             'model' => 'required|string|max:100',
             'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
             'plate' => 'required|string|max:20|unique:cars,plate',
+            'vin' => 'nullable|string|size:17|unique:cars,vin',
             'km_current' => 'required|integer|min:0',
         ]);
 
@@ -64,6 +65,7 @@ class ClientCarController extends Controller
             'model' => 'required|string|max:100',
             'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
             'plate' => 'required|string|max:20|unique:cars,plate,' . $car->id,
+            'vin' => 'nullable|string|size:17|unique:cars,vin,' . $car->id,
             'km_current' => 'required|integer|min:0',
         ]);
 
