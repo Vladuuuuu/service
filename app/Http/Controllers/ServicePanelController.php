@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Intervention;
+use App\Models\InterventionPart;
 use App\Models\Invoice;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -64,7 +65,7 @@ class ServicePanelController extends Controller
         $service = $this->getService($request);
         abort_unless($intervention->service_id === $service->id, 403);
 
-        $intervention->load(['car.user', 'invoice']);
+        $intervention->load(['car.user', 'invoice', 'parts']);
 
         return view('service.intervention-show', compact('intervention'));
     }
@@ -111,28 +112,62 @@ class ServicePanelController extends Controller
         return back()->with('success', 'Intervenție actualizată.');
     }
 
+    public function sendDeviz(Request $request, Intervention $intervention): RedirectResponse
+    {
+        $service = $this->getService($request);
+        abort_unless($intervention->service_id === $service->id, 403);
+        abort_unless($intervention->status === 'in_progress', 422, 'Devizul se poate trimite doar pentru intervenții active.');
+        abort_if($intervention->deviz_status === 'aprobat', 409, 'Devizul a fost deja aprobat de client.');
+
+        $validated = $request->validate([
+            'deviz_manopera' => 'required|numeric|min:0',
+            'parts' => 'nullable|array',
+            'parts.*.name' => 'required|string|max:255',
+            'parts.*.quantity' => 'required|numeric|min:0.01',
+            'parts.*.unit_price' => 'required|numeric|min:0',
+        ]);
+
+        $intervention->update([
+            'deviz_manopera' => $validated['deviz_manopera'],
+            'deviz_piese' => collect($validated['parts'] ?? [])->sum(fn($p) => $p['quantity'] * $p['unit_price']),
+            'deviz_status' => 'trimis',
+        ]);
+
+        $intervention->parts()->delete();
+
+        foreach ($validated['parts'] ?? [] as $part) {
+            $intervention->parts()->create([
+                'name' => $part['name'],
+                'quantity' => $part['quantity'],
+                'unit_price' => $part['unit_price'],
+            ]);
+        }
+
+        return back()->with('success', 'Deviz trimis clientului spre aprobare.');
+    }
+
     public function createInvoice(Request $request, Intervention $intervention): RedirectResponse
     {
         $service = $this->getService($request);
         abort_unless($intervention->service_id === $service->id, 403);
         abort_if($intervention->invoice, 409, 'Factura există deja.');
 
-        $validated = $request->validate([
-            'total' => 'required|numeric|min:0.01',
-        ]);
+        $intervention->load('parts');
+
+        $total = (float) ($intervention->deviz_manopera ?? $intervention->final_cost ?? 0)
+            + $intervention->partsTotal();
 
         $lastNumber = Invoice::max('id') + 1;
 
         Invoice::create([
             'intervention_id' => $intervention->id,
             'number' => 'FA-' . str_pad($lastNumber, 5, '0', STR_PAD_LEFT),
-            'total' => $validated['total'],
+            'total' => $total,
             'issued_at' => now(),
         ]);
 
-        // Also set final_cost on intervention if not set
         if (!$intervention->final_cost) {
-            $intervention->update(['final_cost' => $validated['total']]);
+            $intervention->update(['final_cost' => $total]);
         }
 
         return back()->with('success', 'Factură emisă cu succes.');

@@ -9,7 +9,7 @@ class InvoiceController extends Controller
 {
     public function pdf(Invoice $invoice)
     {
-        $invoice->load('intervention.car.user', 'intervention.service');
+        $invoice->load('intervention.car.user', 'intervention.service', 'intervention.parts');
         $user = auth()->user();
 
         // Client can download their own invoices

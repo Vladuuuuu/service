@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('/interventions/{intervention}/status', [ServicePanelController::class, 'updateStatus'])->name('service.interventions.status');
         Route::patch('/interventions/{intervention}', [ServicePanelController::class, 'updateIntervention'])->name('service.interventions.update');
         Route::post('/interventions/{intervention}/invoice', [ServicePanelController::class, 'createInvoice'])->name('service.interventions.invoice');
+        Route::post('/interventions/{intervention}/deviz', [ServicePanelController::class, 'sendDeviz'])->name('service.interventions.deviz');
         Route::get('/settings', [ServicePanelController::class, 'settings'])->name('service.settings');
         Route::patch('/settings', [ServicePanelController::class, 'updateSettings'])->name('service.settings.update');
     });
@@ -53,6 +54,10 @@ Route::middleware('auth')->group(function () {
         'update' => 'client.cars.update',
         'destroy' => 'client.cars.destroy',
     ]);
+
+    // Deviz intervenție (client)
+    Route::post('/client/interventions/{intervention}/deviz/approve', [ClientController::class, 'approveDeviz'])->name('client.interventions.deviz.approve');
+    Route::post('/client/interventions/{intervention}/deviz/reject', [ClientController::class, 'rejectDeviz'])->name('client.interventions.deviz.reject');
 
     // Programare la service
     Route::post('/services/{service}/book', [ServiceController::class, 'book'])->name('services.book');
