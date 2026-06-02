@@ -184,11 +184,16 @@ class ServicePanelController extends Controller
         $service = $this->getService($request);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'city' => 'required|string|max:100',
-            'phone' => 'nullable|string|max:20',
-            'description' => 'nullable|string|max:1000',
+            'name'           => 'required|string|max:255',
+            'address'        => 'required|string|max:255',
+            'city'           => 'required|string|max:100',
+            'phone'          => 'nullable|string|max:20',
+            'email'          => 'nullable|email|max:255',
+            'website'        => 'nullable|url|max:255',
+            'description'    => 'nullable|string|max:1000',
+            'schedule_start' => 'required|date_format:H:i',
+            'schedule_end'   => 'required|date_format:H:i|after:schedule_start',
+            'max_daily_slots'=> 'required|integer|min:1|max:50',
         ]);
 
         $service->update($validated);

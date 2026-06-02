@@ -10,7 +10,8 @@ class Service extends Model
 {
     protected $fillable = [
         'user_id', 'name', 'address', 'city',
-        'lat', 'lng', 'rating', 'phone', 'description',
+        'lat', 'lng', 'rating', 'phone', 'email', 'website',
+        'description', 'schedule_start', 'schedule_end', 'max_daily_slots',
     ];
 
     protected $casts = [
