@@ -10,13 +10,13 @@
         @csrf
 
         <div>
-            <x-input-label for="email" :value="__('Email')" />
+            <x-input-label for="email" :value="'Email'" />
             <x-text-input id="email" class="block mt-1.5 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="email@exemplu.ro" />
             <x-input-error :messages="$errors->get('email')" class="mt-1.5" />
         </div>
 
         <div class="mt-5">
-            <x-input-label for="password" :value="__('Password')" />
+            <x-input-label for="password" :value="'Parolă'" />
             <x-text-input id="password" class="block mt-1.5 w-full" type="password" name="password" required autocomplete="current-password" placeholder="••••••••" />
             <x-input-error :messages="$errors->get('password')" class="mt-1.5" />
         </div>
@@ -24,7 +24,7 @@
         <div class="flex items-center justify-between mt-5">
             <label for="remember_me" class="inline-flex items-center">
                 <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-500">{{ __('Remember me') }}</span>
+                <span class="ms-2 text-sm text-gray-500">Ține-mă minte</span>
             </label>
 
             @if (Route::has('password.request'))
@@ -36,7 +36,7 @@
 
         <div class="mt-6">
             <x-primary-button class="w-full justify-center">
-                {{ __('Log in') }}
+                Autentifică-te
             </x-primary-button>
         </div>
 
