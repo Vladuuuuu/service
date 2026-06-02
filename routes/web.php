@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/interventions/{intervention}/deviz', [ServicePanelController::class, 'sendDeviz'])->name('service.interventions.deviz');
         Route::get('/settings', [ServicePanelController::class, 'settings'])->name('service.settings');
         Route::patch('/settings', [ServicePanelController::class, 'updateSettings'])->name('service.settings.update');
+        Route::get('/analytics', [ServicePanelController::class, 'analytics'])->name('service.analytics');
     });
 
     // CRUD mașini client

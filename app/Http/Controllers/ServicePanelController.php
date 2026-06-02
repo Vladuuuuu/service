@@ -173,6 +173,112 @@ class ServicePanelController extends Controller
         return back()->with('success', 'Factură emisă cu succes.');
     }
 
+    public function analytics(Request $request): View
+    {
+        $service = $this->getService($request);
+
+        // Intervenții finalizate
+        $completed = $service->interventions()
+            ->where('status', 'completed')
+            ->with('car')
+            ->get();
+
+        // Intervenții pe luni (ultimele 12 luni)
+        $byMonth = $service->interventions()
+            ->whereNotIn('status', ['cancelled'])
+            ->where('created_at', '>=', now()->subMonths(11)->startOfMonth())
+            ->get()
+            ->groupBy(fn($i) => $i->created_at->format('Y-m'))
+            ->map->count()
+            ->sortKeys();
+
+        // Completăm lunile lipsă
+        $monthlyLabels = [];
+        $monthlyCounts = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $key = now()->subMonths($i)->format('Y-m');
+            $label = now()->subMonths($i)->locale('ro')->isoFormat('MMM YY');
+            $monthlyLabels[] = $label;
+            $monthlyCounts[] = $byMonth[$key] ?? 0;
+        }
+
+        // Venituri pe luni (ultimele 12)
+        $revenueByMonth = $service->interventions()
+            ->where('status', 'completed')
+            ->where('completed_at', '>=', now()->subMonths(11)->startOfMonth())
+            ->get()
+            ->groupBy(fn($i) => $i->completed_at->format('Y-m'))
+            ->map->sum('final_cost')
+            ->sortKeys();
+
+        $monthlyRevenue = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $key = now()->subMonths($i)->format('Y-m');
+            $monthlyRevenue[] = round($revenueByMonth[$key] ?? 0, 2);
+        }
+
+        // Distribuție tip intervenție
+        $byType = $service->interventions()
+            ->whereNotIn('status', ['cancelled'])
+            ->get()
+            ->groupBy('type')
+            ->map->count();
+
+        $typeLabels = $byType->keys()->map(fn($t) => match($t) {
+            'ulei' => 'Schimb ulei',
+            'revizie' => 'Revizie',
+            'frane' => 'Frâne',
+            'general' => 'General',
+            default => ucfirst($t),
+        })->values();
+        $typeCounts = $byType->values();
+
+        // Top mărci de mașini
+        $topBrands = $service->interventions()
+            ->whereNotIn('status', ['cancelled'])
+            ->with('car')
+            ->get()
+            ->groupBy(fn($i) => $i->car->brand ?? 'Necunoscut')
+            ->map->count()
+            ->sortDesc()
+            ->take(6);
+
+        // Timp mediu de finalizare (în ore, din estimated_hours)
+        $avgHoursByTypeRaw = $completed
+            ->filter(fn($i) => $i->estimated_hours > 0)
+            ->groupBy('type')
+            ->map(fn($group) => round($group->avg('estimated_hours'), 1));
+
+        $typeLabelsMap = ['ulei' => 'Schimb ulei', 'revizie' => 'Revizie', 'frane' => 'Frâne', 'general' => 'General'];
+        $avgHoursLabels = $avgHoursByTypeRaw->keys()->map(fn($t) => $typeLabelsMap[$t] ?? ucfirst($t))->values();
+        $avgHoursByType = $avgHoursByTypeRaw->values();
+
+        // Rata de conversie deviz aprobat
+        $totalWithDeviz = $service->interventions()->whereNotNull('deviz_status')->count();
+        $approved = $service->interventions()->where('deviz_status', 'aprobat')->count();
+        $rejected = $service->interventions()->where('deviz_status', 'respins')->count();
+        $pending  = $service->interventions()->where('deviz_status', 'trimis')->count();
+
+        // Statistica generală
+        $stats = [
+            'total'       => $service->interventions()->count(),
+            'completed'   => $completed->count(),
+            'revenue'     => $service->interventions()->where('status', 'completed')->sum('final_cost'),
+            'avg_cost'    => $completed->where('final_cost', '>', 0)->avg('final_cost') ?? 0,
+            'avg_hours'   => $completed->where('estimated_hours', '>', 0)->avg('estimated_hours') ?? 0,
+            'clients'     => $service->interventions()->with('car.user')->get()->pluck('car.user_id')->unique()->count(),
+        ];
+
+        return view('service.analytics', compact(
+            'service', 'stats',
+            'monthlyLabels', 'monthlyCounts', 'monthlyRevenue',
+            'typeLabels', 'typeCounts',
+            'topBrands',
+            'avgHoursLabels', 'avgHoursByType',
+            'totalWithDeviz', 'approved', 'rejected', 'pending'
+        ));
+    }
+
     public function settings(Request $request): View
     {
         $service = $this->getService($request);

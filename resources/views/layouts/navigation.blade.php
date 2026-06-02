@@ -30,6 +30,9 @@
                         <x-nav-link :href="route('service.dashboard')" :active="request()->routeIs('service.dashboard')">
                             Dashboard
                         </x-nav-link>
+                        <x-nav-link :href="route('service.analytics')" :active="request()->routeIs('service.analytics')">
+                            Serviciul meu
+                        </x-nav-link>
                         <x-nav-link :href="route('service.interventions')" :active="request()->routeIs('service.interventions*')">
                             Intervenții
                         </x-nav-link>
@@ -43,9 +46,11 @@
                         </x-nav-link>
                         @endif
                     @endauth
+                    @if(!auth()->check() || !auth()->user()->isService())
                     <x-nav-link :href="route('services.index')" :active="request()->routeIs('services.*')">
                         Service-uri
                     </x-nav-link>
+                    @endif
                 </div>
             </div>
 
