@@ -31,7 +31,7 @@
                             Dashboard
                         </x-nav-link>
                         <x-nav-link :href="route('service.analytics')" :active="request()->routeIs('service.analytics')">
-                            Serviciul meu
+                            My Service
                         </x-nav-link>
                         <x-nav-link :href="route('service.interventions')" :active="request()->routeIs('service.interventions*')">
                             Intervenții
